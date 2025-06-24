@@ -4,7 +4,7 @@ import { scrollToTile, getAvailablePositions } from './grid.js';
 
 const gridContainer = document.getElementById('gridContainer');
 const stepSlider = document.getElementById('stepSlider');
-const stepValue = document.getElementById('stepSlider');
+const stepValue = document.getElementById('stepValue');
 const stepToggle = document.getElementById('stepToggle');
 const stepCounter = document.getElementById('stepCounter');
 const noteModal = document.getElementById('noteModal');
@@ -28,7 +28,6 @@ function updateStepDisplay() {
 }
 
 function initializeGrid() {
-  console.log("initializeGrid() called");
   clearGrid(gridContainer);
   path.length = 0;
   gridMap.clear();
@@ -41,7 +40,6 @@ function initializeGrid() {
   const startTile = createTile(x, y, 'begin', handleTileClick);
   occupied.add(`${x},${y}`);
   gridMap.set(`${x},${y}`, startTile);
-  console.log("Start tile:", startTile);
   gridContainer.appendChild(startTile.el);
   scrollToTile(startTile.el);
 }
@@ -63,11 +61,6 @@ function handleTileClick(x, y) {
     addNextTiles(x, y);
     removeOldGreyTiles();
   }
-
-  if (tile.state === 'black') {
-   tile.el.addEventListener('click', () => openNoteModal(x, y));
-}
-
 }
 
 function addNextTiles(x, y) {
@@ -102,7 +95,6 @@ stepToggle.addEventListener('change', () => {
   updateStepDisplay();
 });
 
-// Enhanced center logic with return trigger
 function showCenter(x, y) {
   const centerTile = createTile(x, y, 'center');
   centerTile.setState('black', 'center');
