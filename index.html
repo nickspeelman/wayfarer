@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wayfarer</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="controls">
+    <label for="stepSlider">Steps:</label>
+    <input type="range" id="stepSlider" min="5" max="100" value="20" />
+    <span id="stepValue">20</span>
+    <label>
+      <input type="checkbox" id="stepToggle" checked /> Show Step Counter
+    </label>
+  </div>
+
+  <div id="stepCounter">Step 0</div>
+
+  <div id="gridContainer"></div>
+
+  <div id="noteModal" class="hidden">
+    <div id="noteContent">
+      <textarea id="noteText" placeholder="Type your reflection..."></textarea>
+      <button id="closeNote">Close</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
