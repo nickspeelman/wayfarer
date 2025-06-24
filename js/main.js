@@ -28,6 +28,7 @@ function updateStepDisplay() {
 }
 
 function initializeGrid() {
+  console.log("initializeGrid() called");
   clearGrid(gridContainer);
   path.length = 0;
   gridMap.clear();
@@ -40,6 +41,7 @@ function initializeGrid() {
   const startTile = createTile(x, y, 'begin', handleTileClick);
   occupied.add(`${x},${y}`);
   gridMap.set(`${x},${y}`, startTile);
+  console.log("Start tile:", startTile);
   gridContainer.appendChild(startTile.el);
   scrollToTile(startTile.el);
 }
