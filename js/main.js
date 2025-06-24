@@ -64,7 +64,10 @@ function handleTileClick(x, y) {
     removeOldGreyTiles();
   }
 
-  tile.el.addEventListener('click', () => openNoteModal(x, y));
+  if (tile.state === 'black') {
+   tile.el.addEventListener('click', () => openNoteModal(x, y));
+}
+
 }
 
 function addNextTiles(x, y) {
