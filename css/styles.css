@@ -1,0 +1,117 @@
+/* styles.css */
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f2f2f2;
+  overflow: hidden;
+}
+
+#controls {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#stepCounter {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+#gridContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: max-content;
+  height: max-content;
+  transition: transform 1s ease;
+}
+
+.tile {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.tile.grey {
+  background: #ccc;
+}
+
+.tile.black {
+  background: #111;
+  color: white;
+}
+
+.tile span {
+  pointer-events: none;
+}
+
+/* Note Modal */
+#noteModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#noteContent {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#noteText {
+  width: 100%;
+  height: 100px;
+  resize: none;
+  font-family: sans-serif;
+  font-size: 1em;
+  padding: 8px;
+}
+
+#closeNote {
+  align-self: flex-end;
+  padding: 6px 12px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
