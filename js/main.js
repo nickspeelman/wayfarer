@@ -169,6 +169,7 @@ function showEndTile() {
 }
 
 function openNoteModal(x, y, note = '') {
+  console.log('Opening modal for:', x, y); // <- log it!
   noteText.value = note;
   noteModal.classList.remove('hidden');
   closeNote.onclick = () => {
