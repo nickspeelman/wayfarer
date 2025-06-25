@@ -84,8 +84,9 @@ function handleTileClick(x, y) {
 
 function addNextTiles(x, y) {
   const available = getAvailablePositions(x, y, occupied);
-  const next = available.slice(0, 3);
+  console.log("Available positions for next tiles:", available);
 
+  const next = available.slice(0, 3);
   next.forEach(pos => {
     const tile = createTile(pos.x, pos.y, '', handleTileClick);
     gridContainer.appendChild(tile.el);
@@ -93,6 +94,7 @@ function addNextTiles(x, y) {
     occupied.add(`${pos.x},${pos.y}`);
   });
 }
+
 
 function removeOldGreyTiles() {
   gridMap.forEach(tile => {
