@@ -114,5 +114,10 @@ body {
 }
 
 .hidden {
+  display: none;
+}
+
+#noteModal.hidden {
   display: none !important;
 }
+
