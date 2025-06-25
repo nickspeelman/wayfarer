@@ -83,10 +83,6 @@ body {
   z-index: 100;
 }
 
-#noteModal.hidden {
-  display: none !important;
-}
-
 #noteContent {
   background: white;
   padding: 20px;
@@ -118,5 +114,5 @@ body {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
