@@ -51,35 +51,22 @@ function handleTileClick(x, y) {
   const tile = gridMap.get(key);
   if (!tile || tile.state !== 'grey') return;
 
-  // Special handling for the first tile
-  if (stepCount === 0 && tile.label === 'begin') {
-    tile.setState('black');
-    stepCount++;
-    updateStepDisplay();
-    path.push({ x, y, stepIndex: stepCount, note: '' });
-
-    addNextTiles(x, y); // show first 3 tiles
-    scrollToTile(tile.el);
-    return; // done with special case
-  }
-
   tile.setState('black');
   stepCount++;
   updateStepDisplay();
   path.push({ x, y, stepIndex: stepCount, note: '' });
   scrollToTile(tile.el);
 
+  tile.el.addEventListener('click', () => openNoteModal(x, y));
+
   if (stepCount === maxSteps) {
     showCenter(x, y);
   } else {
-    addNextTiles(x, y);
+    addNextTiles(x, y);         // <== Now this should fire
     removeOldGreyTiles();
   }
-
-  if (tile.state === 'black') {
-    tile.el.addEventListener('click', () => openNoteModal(x, y));
-  }
 }
+
 
 
 function addNextTiles(x, y) {
