@@ -38,16 +38,30 @@ function initializeGrid() {
 
   const x = 0, y = 0;
   const startTile = createTile(x, y, 'begin', handleTileClick);
-  occupied.add(`${x},${y}`);
-  gridMap.set(`${x},${y}`, startTile);
+  startTile.setState('grey');
   gridContainer.appendChild(startTile.el);
+  gridMap.set(`${x},${y}`, startTile);
+  occupied.add(`${x},${y}`);
   scrollToTile(startTile.el);
 }
+
 
 function handleTileClick(x, y) {
   const key = `${x},${y}`;
   const tile = gridMap.get(key);
   if (!tile || tile.state !== 'grey') return;
+
+  // Special handling for the first tile
+  if (stepCount === 0 && tile.label === 'begin') {
+    tile.setState('black');
+    stepCount++;
+    updateStepDisplay();
+    path.push({ x, y, stepIndex: stepCount, note: '' });
+
+    addNextTiles(x, y); // show first 3 tiles
+    scrollToTile(tile.el);
+    return; // done with special case
+  }
 
   tile.setState('black');
   stepCount++;
@@ -61,7 +75,12 @@ function handleTileClick(x, y) {
     addNextTiles(x, y);
     removeOldGreyTiles();
   }
+
+  if (tile.state === 'black') {
+    tile.el.addEventListener('click', () => openNoteModal(x, y));
+  }
 }
+
 
 function addNextTiles(x, y) {
   const available = getAvailablePositions(x, y, occupied);
