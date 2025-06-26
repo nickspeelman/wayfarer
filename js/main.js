@@ -62,8 +62,9 @@ function handleTileClick(x, y) {
   if (stepCount === maxSteps) {
     showCenter(x, y);
   } else {
-    addNextTiles(x, y);         // <== Now this should fire
     removeOldGreyTiles();
+    addNextTiles(x, y);         // <== Now this should fire
+    
   }
 }
 
@@ -86,6 +87,7 @@ function addNextTiles(x, y) {
 function removeOldGreyTiles() {
   gridMap.forEach(tile => {
     if (tile.state === 'grey') {
+      console.log(`Removing grey tile at ${tile.x}, ${tile.y}`);
       tile.el.remove();
       gridMap.delete(`${tile.x},${tile.y}`);
       occupied.delete(`${tile.x},${tile.y}`);
