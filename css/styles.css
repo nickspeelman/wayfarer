@@ -31,18 +31,18 @@ body {
 }
 
 #gridWrapper {
-  position: fixed;
-  top: 0; left: 0;
+  position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #gridContainer {
   position: relative;
-  width: max-content;
-  height: max-content;
+  width: 12000px; /* set dynamically in JS */
+  height: 12000px; /* set dynamically in JS */
 }
+
 
 
 

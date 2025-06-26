@@ -42,15 +42,17 @@ function initializeGrid() {
   updateStepDisplay();
 
   const tileSize = 60;
-  const span = maxSteps * 2;         // Full grid span in tiles
-  const x = maxSteps;                // Place begin in center
-  const y = maxSteps;
+  const gridTileCount = maxSteps * 2;              // e.g., 100 steps → 200x200 tiles
+  const gridPixelSize = tileSize * gridTileCount;  // → 12000px
 
-  // Set grid container size to fit the full path in any direction
-  gridContainer.style.width = `${tileSize * span}px`;
-  gridContainer.style.height = `${tileSize * span}px`;
+  // Set fixed pixel size for grid container FIRST
+  gridContainer.style.width = `${gridPixelSize}px`;
+  gridContainer.style.height = `${gridPixelSize}px`;
 
-  // Initialize bounds to center point
+  const centerTile = Math.floor(gridTileCount / 2); // → 100
+  const x = centerTile;
+  const y = centerTile;
+
   minX = maxX = x;
   minY = maxY = y;
 
@@ -60,12 +62,12 @@ function initializeGrid() {
   gridMap.set(`${x},${y}`, startTile);
   occupied.add(`${x},${y}`);
 
-  // Scroll to center the start tile
   setTimeout(() => {
     scrollToTile(startTile.el);
     console.log('Start tile offset:', startTile.el.offsetLeft, startTile.el.offsetTop);
   }, 0);
 }
+
 
 
 function resizeGrid() {
@@ -202,6 +204,22 @@ function initiateReturnPhase() {
 });
 }
 
+function revealFullPath() {
+  path.forEach(({ x, y }) => {
+    const key = `${x},${y}`;
+    if (!gridMap.has(key)) {
+      const tile = createTile(x, y, '', () => {}); // dummy click handler
+      tile.setState('black');
+      gridMap.set(key, tile);
+      gridContainer.appendChild(tile.el);
+    } else {
+      const tile = gridMap.get(key);
+      tile.setState('black');
+    }
+  });
+}
+
+
 
 function handleReturnClick() {
   const { x, y, note } = path[returnIndex];
@@ -225,6 +243,7 @@ function handleReturnClick() {
       scrollToTile(nextTile.el);
     }
   } else {
+    revealFullPath(); // 🔥 Show full path before ending
     showEndTile();
   }
 }
@@ -232,20 +251,36 @@ function handleReturnClick() {
 
 function showEndTile() {
   const start = path[0];
+  const key = `${start.x},${start.y}`;
+
+  // Remove existing tile at the start position if it's still in gridMap
+  const oldTile = gridMap.get(key);
+  if (oldTile) {
+    oldTile.el.remove();
+    gridMap.delete(key);
+    occupied.delete(key);
+  }
+
+  // Create the new "end" tile
   const tile = createTile(start.x, start.y, 'end');
   tile.setState('black', 'end');
+  gridMap.set(key, tile);
+  occupied.add(key);
   gridContainer.appendChild(tile.el);
-  scrollToTile(tile.el);
+  scrollToTile(tile.el); // Optional: ensure it's visible before zoom
 
-  // 🚀 Trigger zoom-out immediately
-  gridContainer.style.transition = 'transform 1s ease';
-  gridContainer.style.transformOrigin = 'center center';
-  gridContainer.style.transform = 'scale(0.5) translate(-50%, -50%)';
+  // Add click-to-zoom handler
+  tile.el.addEventListener('click', () => {
+    gridContainer.style.transition = 'transform 1s ease';
+    gridContainer.style.transformOrigin = 'center center';
+    gridContainer.style.transform = 'scale(0.5) translate(-50%, -50%)';
 
-  setTimeout(() => {
-    alert('You have returned.');
-  }, 1000);
+    setTimeout(() => {
+      alert('You have returned.');
+    }, 1000);
+  }, { once: true });
 }
+
 
 
 function openNoteModal(x, y, note = '') {
