@@ -19,6 +19,8 @@ const path = []; // Stack of clicked tiles with { x, y, stepIndex, note }
 const gridMap = new Map(); // Keyed by `${x},${y}`
 const occupied = new Set(); // Tracks all placed tiles
 let returnIndex = null;
+let isReturning = false;
+
 
 function updateStepDisplay() {
   stepCounter.style.display = showCounter ? 'block' : 'none';
@@ -47,6 +49,11 @@ function initializeGrid() {
 
 
 function handleTileClick(x, y) {
+  if (isReturning) {
+    console.warn("Ignored handleTileClick during return phase");
+    return;
+  }
+
   const key = `${x},${y}`;
   const tile = gridMap.get(key);
   if (!tile || tile.state !== 'grey') return;
@@ -57,14 +64,13 @@ function handleTileClick(x, y) {
   path.push({ x, y, stepIndex: stepCount, note: '' });
   scrollToTile(tile.el);
 
-  tile.el.addEventListener('click', () => openNoteModal(x, y));
+  //tile.el.addEventListener('click', () => openNoteModal(x, y));
 
   if (stepCount === maxSteps) {
     showCenter(x, y);
   } else {
     removeOldGreyTiles();
-    addNextTiles(x, y);         // <== Now this should fire
-    
+    addNextTiles(x, y);
   }
 }
 
@@ -84,16 +90,19 @@ function addNextTiles(x, y) {
 }
 
 
-function removeOldGreyTiles() {
+function removeOldGreyTiles(excludePositions = []) {
   gridMap.forEach(tile => {
-    if (tile.state === 'grey') {
+    const key = `${tile.x},${tile.y}`;
+    const isExcluded = excludePositions.some(pos => pos.x === tile.x && pos.y === tile.y);
+    if (tile.state === 'grey' && !isExcluded) {
       console.log(`Removing grey tile at ${tile.x}, ${tile.y}`);
       tile.el.remove();
-      gridMap.delete(`${tile.x},${tile.y}`);
-      occupied.delete(`${tile.x},${tile.y}`);
+      gridMap.delete(key);
+      occupied.delete(key);
     }
   });
 }
+
 
 stepSlider.addEventListener('input', () => {
   stepValue.textContent = stepSlider.value;
@@ -106,34 +115,45 @@ stepToggle.addEventListener('change', () => {
 });
 
 function showCenter(x, y) {
-  const centerTile = createTile(x, y, 'center');
-  centerTile.setState('black', 'center');
-  gridContainer.appendChild(centerTile.el);
-  scrollToTile(centerTile.el);
+  const centerModal = document.getElementById('centerModal');
+  const returnBtn = document.getElementById('returnBtn');
 
-  const returnData = path[path.length - 1];
-  const returnTile = gridMap.get(`${returnData.x},${returnData.y}`);
-  returnTile.setState('black', 'return');
-  returnTile.el.addEventListener('click', () => {
-    centerTile.el.remove();
+  centerModal.classList.remove('hidden');
+
+  returnBtn.onclick = () => {
+    centerModal.classList.add('hidden');
+
+    const lastStep = path[path.length - 1];
+    const tile = gridMap.get(`${lastStep.x},${lastStep.y}`);
+    if (tile) {
+      tile.setState('grey');
+    }
+
+    removeOldGreyTiles([{ x: lastStep.x, y: lastStep.y }]);
     initiateReturnPhase();
-  }, { once: true });
+  };
 }
 
 function initiateReturnPhase() {
-  path.forEach(({ x, y }) => {
-    const tile = gridMap.get(`${x},${y}`);
-    if (tile) tile.setState('grey');
-  });
-
+  isReturning = true;
   returnIndex = path.length - 1;
-  const { x, y } = path[returnIndex];
-  const tile = gridMap.get(`${x},${y}`);
-  if (tile) {
-    tile.setState('black');
-    tile.el.addEventListener('click', () => handleReturnClick(), { once: true });
-  }
+
+  path.forEach(({ x, y }, idx) => {
+    const tile = gridMap.get(`${x},${y}`);
+    if (tile) {
+      if (idx === returnIndex) {
+        const newTileEl = tile.el.cloneNode(true); // wipe previous listeners
+        tile.el.replaceWith(newTileEl);
+        tile.el = newTileEl;
+        tile.setState('grey');
+        tile.el.addEventListener('click', () => handleReturnClick(), { once: true });
+      } else {
+        tile.setState('black');
+      }
+    }
+  });
 }
+
 
 function handleReturnClick() {
   const { x, y, note } = path[returnIndex];
@@ -152,7 +172,7 @@ function handleReturnClick() {
     const next = path[returnIndex];
     const nextTile = gridMap.get(`${next.x},${next.y}`);
     if (nextTile) {
-      nextTile.setState('black');
+      nextTile.setState('grey'); // ✅ Turn the next tile grey
       nextTile.el.addEventListener('click', () => handleReturnClick(), { once: true });
       scrollToTile(nextTile.el);
     }
@@ -160,6 +180,7 @@ function handleReturnClick() {
     showEndTile();
   }
 }
+
 
 function showEndTile() {
   const start = path[0];
