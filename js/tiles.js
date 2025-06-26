@@ -6,6 +6,7 @@ export function createTile(x, y, label = '', onClick = null) {
   el.style.left = `${x * 60}px`;
   el.style.top = `${y * 60}px`;
 
+
   if (label) {
     const labelEl = document.createElement('span');
     labelEl.textContent = label;

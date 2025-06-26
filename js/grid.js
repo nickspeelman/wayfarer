@@ -19,9 +19,18 @@ export function getAvailablePositions(x, y, occupiedSet) {
 
 // Scroll a tile into the center of the screen
 export function scrollToTile(tileEl) {
-  tileEl.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'center'
+  const wrapper = document.getElementById('gridWrapper');
+
+  const scrollLeft = tileEl.offsetLeft - wrapper.clientWidth / 2 + tileEl.offsetWidth / 2;
+  const scrollTop = tileEl.offsetTop - wrapper.clientHeight / 2 + tileEl.offsetHeight / 2;
+
+  wrapper.scrollTo({
+    top: scrollTop,
+    left: scrollLeft,
+    behavior: 'smooth'
   });
 }
+
+
+
+

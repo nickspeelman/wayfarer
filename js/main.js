@@ -20,6 +20,8 @@ const gridMap = new Map(); // Keyed by `${x},${y}`
 const occupied = new Set(); // Tracks all placed tiles
 let returnIndex = null;
 let isReturning = false;
+let minX = 0, maxX = 0, minY = 0, maxY = 0;
+
 
 
 function updateStepDisplay() {
@@ -36,23 +38,50 @@ function initializeGrid() {
   occupied.clear();
   stepCount = 0;
   returnIndex = null;
+  isReturning = false;
   updateStepDisplay();
 
-  const x = 0, y = 0;
+  const tileSize = 60;
+  const span = maxSteps * 2;         // Full grid span in tiles
+  const x = maxSteps;                // Place begin in center
+  const y = maxSteps;
+
+  // Set grid container size to fit the full path in any direction
+  gridContainer.style.width = `${tileSize * span}px`;
+  gridContainer.style.height = `${tileSize * span}px`;
+
+  // Initialize bounds to center point
+  minX = maxX = x;
+  minY = maxY = y;
+
   const startTile = createTile(x, y, 'begin', handleTileClick);
   startTile.setState('grey');
   gridContainer.appendChild(startTile.el);
   gridMap.set(`${x},${y}`, startTile);
   occupied.add(`${x},${y}`);
-  scrollToTile(startTile.el);
+
+  // Scroll to center the start tile
+  setTimeout(() => {
+    scrollToTile(startTile.el);
+    console.log('Start tile offset:', startTile.el.offsetLeft, startTile.el.offsetTop);
+  }, 0);
 }
 
 
+function resizeGrid() {
+  const tileSize = 60;
+  const span = maxSteps * 2;
+
+  gridContainer.style.width = `${tileSize * span}px`;
+  gridContainer.style.height = `${tileSize * span}px`;
+}
+
+
+
+
+
 function handleTileClick(x, y) {
-  if (isReturning) {
-    console.warn("Ignored handleTileClick during return phase");
-    return;
-  }
+  if (isReturning) return; // ⛔ Block clicks during return phase
 
   const key = `${x},${y}`;
   const tile = gridMap.get(key);
@@ -64,7 +93,12 @@ function handleTileClick(x, y) {
   path.push({ x, y, stepIndex: stepCount, note: '' });
   scrollToTile(tile.el);
 
-  //tile.el.addEventListener('click', () => openNoteModal(x, y));
+  // Track bounds for resizing
+  minX = Math.min(minX, x);
+  maxX = Math.max(maxX, x);
+  minY = Math.min(minY, y);
+  maxY = Math.max(maxY, y);
+  resizeGrid();
 
   const available = getAvailablePositions(x, y, occupied);
 
@@ -72,25 +106,32 @@ function handleTileClick(x, y) {
     showCenter(x, y);
   } else {
     removeOldGreyTiles(available);
-    addNextTiles(x, y);
+    addNextTiles(x, y, available); // pass available to avoid recomputing
+  }
 }
 
-}
 
 
-
-function addNextTiles(x, y) {
-  const available = getAvailablePositions(x, y, occupied);
-  console.log("Available positions for next tiles:", available);
-
+function addNextTiles(x, y, availablePositions = null) {
+  const available = availablePositions || getAvailablePositions(x, y, occupied);
   const next = available.slice(0, 3);
+
   next.forEach(pos => {
     const tile = createTile(pos.x, pos.y, '', handleTileClick);
     gridContainer.appendChild(tile.el);
     gridMap.set(`${pos.x},${pos.y}`, tile);
     occupied.add(`${pos.x},${pos.y}`);
+
+    // Expand bounds
+    minX = Math.min(minX, pos.x);
+    maxX = Math.max(maxX, pos.x);
+    minY = Math.min(minY, pos.y);
+    maxY = Math.max(maxY, pos.y);
   });
+
+  resizeGrid();
 }
+
 
 
 function removeOldGreyTiles(excludePositions = []) {
@@ -220,5 +261,6 @@ function openNoteModal(x, y, note = '') {
   };
 }
 
-// Start the app
-initializeGrid();
+document.getElementById('startButton').addEventListener('click', () => {
+  initializeGrid();
+});
