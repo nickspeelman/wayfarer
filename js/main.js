@@ -66,12 +66,15 @@ function handleTileClick(x, y) {
 
   //tile.el.addEventListener('click', () => openNoteModal(x, y));
 
-  if (stepCount === maxSteps) {
+  const available = getAvailablePositions(x, y, occupied);
+
+  if (stepCount === maxSteps || available.length === 0) {
     showCenter(x, y);
   } else {
-    removeOldGreyTiles();
+    removeOldGreyTiles(available);
     addNextTiles(x, y);
-  }
+}
+
 }
 
 
@@ -139,19 +142,23 @@ function initiateReturnPhase() {
   returnIndex = path.length - 1;
 
   path.forEach(({ x, y }, idx) => {
-    const tile = gridMap.get(`${x},${y}`);
-    if (tile) {
-      if (idx === returnIndex) {
-        const newTileEl = tile.el.cloneNode(true); // wipe previous listeners
-        tile.el.replaceWith(newTileEl);
-        tile.el = newTileEl;
-        tile.setState('grey');
-        tile.el.addEventListener('click', () => handleReturnClick(), { once: true });
-      } else {
-        tile.setState('black');
-      }
+  const tile = gridMap.get(`${x},${y}`);
+  if (tile) {
+    if (idx === returnIndex) {
+      // Last tile in the path – make it grey and clickable
+      const newTileEl = tile.el.cloneNode(true);
+      tile.el.replaceWith(newTileEl);
+      tile.el = newTileEl;
+      tile.setState('grey');
+      tile.el.addEventListener('click', () => handleReturnClick(), { once: true });
+    } else if (idx === 0) {
+      // 🎯 First tile in the path — change label to "end"
+      tile.setState('black', 'end');
+    } else {
+      tile.setState('black');
     }
-  });
+  }
+});
 }
 
 
@@ -189,15 +196,16 @@ function showEndTile() {
   gridContainer.appendChild(tile.el);
   scrollToTile(tile.el);
 
-  tile.el.addEventListener('click', () => {
-    gridContainer.style.transition = 'transform 1s ease';
-    gridContainer.style.transformOrigin = 'center center';
-    gridContainer.style.transform = 'scale(0.5) translate(-50%, -50%)';
-    setTimeout(() => {
-      alert('You have returned.');
-    }, 1000);
-  }, { once: true });
+  // 🚀 Trigger zoom-out immediately
+  gridContainer.style.transition = 'transform 1s ease';
+  gridContainer.style.transformOrigin = 'center center';
+  gridContainer.style.transform = 'scale(0.5) translate(-50%, -50%)';
+
+  setTimeout(() => {
+    alert('You have returned.');
+  }, 1000);
 }
+
 
 function openNoteModal(x, y, note = '') {
   console.log('Opening modal for:', x, y); // <- log it!
