@@ -277,6 +277,8 @@ function handleReturnClick() {
 
       nextTile.el.replaceWith(newTileEl);
       nextTile.el = newTileEl;
+
+      scrollToTile(nextTile.el);
     }
   } else {
     // 🎉 Finished return journey
