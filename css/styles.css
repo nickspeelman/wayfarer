@@ -537,3 +537,26 @@ input[type="checkbox"] {
 .close-button:focus {
   color: #333;
 }
+
+.floating-about,
+.floating-past {
+  z-index: 5; /* Lower than controls */
+}
+
+@media (max-width: 600px) {
+  .floating-about,
+  .floating-past {
+    position: static;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 0;
+  }
+
+  .floating-button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    padding: 10px;
+  }
+}
