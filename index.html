@@ -7,21 +7,25 @@
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
+    <a href="#" id="aboutLink" class="button-link floating-about">about</a>
   <div id="controls">
-    <label for="stepSlider">Steps:</label>
+    <label for="stepSlider">steps:</label>
     <input type="range" id="stepSlider" min="15" max="100" value="15" />
     <span id="stepValue">15</span>
-    <button id="startButton">Start</button>
+    <button id="startButton">start</button>
+    
+
+
 
 
 
     <label>
-      <input type="checkbox" id="stepToggle"/> Show Step Counter
+      <input type="checkbox" id="stepToggle"/> show step counter
     </label>
   </div>
 
 
-  <div id="stepCounter">Step 0</div>
+  <div id="stepCounter">step 0</div>
 
 <div id="gridWrapper">
   <div id="gridScaler"> <!-- ⬅️ Add this -->
@@ -43,19 +47,35 @@
     <div class="modalBox">
       <h1>center</h1>
       <a href="#" id="returnBtn" class="modal-link">return</a>
+ 
+</div>
+
 
     </div>
   </div>
 
 
-  <div id="completionMessage">
-    <div class="modalBox">
-      <h1>You have returned.</h1>
-      <a href="#" id="restartButton" class="modal-link">start over</a>
-
-    </div>
+<div id="completionMessage">
+  <div class="modalBox">
+    <h1>You have returned.</h1>
+    <a href="#" id="reviewButton" class="modal-link">reflect</a>
+    <a href="#" id="restartButton" class="modal-link">start over</a>
   </div>
+</div>
 
+<!-- Review Path Modal (moved outside) -->
+<div id="reviewModal" class="hidden">
+  <div id="reviewContent">
+    <h2>Your Path</h2>
+    <ul id="reviewList"></ul>
+    <a href="#" id="closeReview" class="modal-link">close</a>
+  </div>
+</div>
+
+
+
+
+</div>
 
  <div id="welcomeModal" class="hidden">
   <div class="modal-content">
@@ -85,8 +105,15 @@
 
        <a href="#" id="closeWelcome" class="modal-link">begin</a>
 
+<label style="margin-top: 1em; font-size: 0.85em; display: flex; align-items: center; gap: 0.4em; opacity: 0.8;">
+  <input type="checkbox" id="hideWelcomeCheckbox" style="transform: scale(0.85);" />
+  Don't show this message again
+</label>
+
+</label>
+
+
   </div>
-</div>
 
 
 
