@@ -6,43 +6,41 @@ export function createTile(x, y, label = '', onClick = null) {
   el.style.left = `${x * 60}px`;
   el.style.top = `${y * 60}px`;
 
+  const labelEl = document.createElement('div');
+  labelEl.classList.add('tile-label');
+  labelEl.textContent = label;
+  el.appendChild(labelEl);
 
-  if (label) {
-    const labelEl = document.createElement('span');
-    labelEl.textContent = label;
-    el.appendChild(labelEl);
+  if (onClick) {
+    el.addEventListener('click', () => onClick(x, y));
   }
 
-  const tile = {
+  return {
     x,
     y,
-    state: 'grey',
     el,
-    labelEl: label ? el.querySelector('span') : null,
+    labelEl,
+    state: 'grey',
+    setState(state, newLabel = '', forceLabel = false) {
+      this.state = state;
+      el.className = `tile ${state}`;
 
-    setState(newState, labelText = null) {
-      el.classList.remove(this.state);
-      el.classList.add(newState);
-      this.state = newState;
-
-      if (labelText !== null) {
-        if (!this.labelEl) {
-          this.labelEl = document.createElement('span');
-          el.appendChild(this.labelEl);
+      if (state === 'black') {
+        if (forceLabel) {
+          this.labelEl.textContent = newLabel;
+          this.labelEl.style.opacity = '1';
+        } else {
+          this.labelEl.textContent = '';
+          this.labelEl.style.opacity = '0';
         }
-        this.labelEl.textContent = labelText;
+      } else {
+        this.labelEl.textContent = newLabel;
+        this.labelEl.style.opacity = '1';
       }
     }
   };
-
-  if (onClick) {
-    el.addEventListener('click', () => {
-      onClick(x, y);
-    });
-  }
-
-  return tile;
 }
+
 
 export function clearGrid(container) {
   container.innerHTML = '';

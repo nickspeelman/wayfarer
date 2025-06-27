@@ -24,8 +24,11 @@
   <div id="stepCounter">Step 0</div>
 
 <div id="gridWrapper">
-  <div id="gridContainer"></div>
+  <div id="gridScaler"> <!-- ⬅️ Add this -->
+    <div id="gridContainer"></div>
+  </div>
 </div>
+
 
 
   <div id="noteModal" class="hidden">
@@ -35,12 +38,22 @@
     </div>
   </div>
 
-  <div id="centerModal" class="hidden">
-  <div id="centerContent">
-    <div id="centerLabel">CENTER</div>
-    <button id="returnBtn">Return</button>
+  <div id="centerModal" class="modalOverlay hidden">
+    <div class="modalBox">
+      <h1>CENTER</h1>
+      <button id="returnBtn">Return</button>
+    </div>
   </div>
-</div>
+
+
+  <div id="completionMessage">
+    <div class="modalBox">
+      <h1>You have returned.</h1>
+      <button id="restartButton">Start Over</button>
+    </div>
+  </div>
+
+
 
 
   <script type="module" src="js/main.js"></script>

@@ -1,6 +1,8 @@
 // js/main.js
 import { createTile, clearGrid } from './tiles.js';
 import { scrollToTile, getAvailablePositions } from './grid.js';
+import { meditativeWords, getRandomWord } from './meditativeWords.js';
+
 
 const gridContainer = document.getElementById('gridContainer');
 const stepSlider = document.getElementById('stepSlider');
@@ -57,7 +59,8 @@ function initializeGrid() {
   minY = maxY = y;
 
   const startTile = createTile(x, y, 'begin', handleTileClick);
-  startTile.setState('grey');
+  startTile.setState('grey', 'begin', true);  // ✅ explicitly force label to show
+
   gridContainer.appendChild(startTile.el);
   gridMap.set(`${x},${y}`, startTile);
   occupied.add(`${x},${y}`);
@@ -92,7 +95,7 @@ function handleTileClick(x, y) {
   tile.setState('black');
   stepCount++;
   updateStepDisplay();
-  path.push({ x, y, stepIndex: stepCount, note: '' });
+  path.push({ x, y, stepIndex: stepCount, note: '', word: tile.word });
   scrollToTile(tile.el);
 
   // Track bounds for resizing
@@ -119,7 +122,12 @@ function addNextTiles(x, y, availablePositions = null) {
   const next = available.slice(0, 3);
 
   next.forEach(pos => {
-    const tile = createTile(pos.x, pos.y, '', handleTileClick);
+  const word = getRandomWord();
+  const label = word;
+
+    const tile = createTile(pos.x, pos.y, label, handleTileClick);
+    tile.word = word;
+
     gridContainer.appendChild(tile.el);
     gridMap.set(`${pos.x},${pos.y}`, tile);
     occupied.add(`${pos.x},${pos.y}`);
@@ -185,24 +193,32 @@ function initiateReturnPhase() {
   returnIndex = path.length - 1;
 
   path.forEach(({ x, y }, idx) => {
-  const tile = gridMap.get(`${x},${y}`);
-  if (tile) {
+    const tile = gridMap.get(`${x},${y}`);
+    if (!tile) return;
+
+    const entry = path.find(p => p.x === x && p.y === y);
+    const label = entry?.stepIndex === 1
+      ? 'begin'
+      : entry?.word || '';
+
     if (idx === returnIndex) {
-      // Last tile in the path – make it grey and clickable
+      // First tile in the return path: make grey and clickable
+      tile.setState('grey', label);
+
       const newTileEl = tile.el.cloneNode(true);
+      newTileEl.addEventListener('click', () => handleReturnClick(), { once: true });
+
       tile.el.replaceWith(newTileEl);
       tile.el = newTileEl;
-      tile.setState('grey');
-      tile.el.addEventListener('click', () => handleReturnClick(), { once: true });
     } else if (idx === 0) {
-      // 🎯 First tile in the path — change label to "end"
-      tile.setState('black', 'end');
+      // Last tile of return path (i.e., beginning of forward): show as "end"
+      tile.setState('black', 'end', true);
     } else {
-      tile.setState('black');
+      tile.setState('black', '');
     }
-  }
-});
+  });
 }
+
 
 function revealFullPath() {
   path.forEach(({ x, y }) => {
@@ -220,40 +236,91 @@ function revealFullPath() {
 }
 
 
-
 function handleReturnClick() {
-  const { x, y, note } = path[returnIndex];
-  const tile = gridMap.get(`${x},${y}`);
+  const { x, y, note, stepIndex, word } = path[returnIndex];
+  const key = `${x},${y}`;
+  const tile = gridMap.get(key);
+  stepCount--;
+  updateStepDisplay();
   if (!tile) return;
 
-  tile.el.remove();
-  gridMap.delete(`${x},${y}`);
-  occupied.delete(`${x},${y}`);
-
+  // Optional: show note modal before removal
   if (note) openNoteModal(x, y, note);
 
+  // Remove the tile from DOM and tracking structures
+  tile.el.remove();
+  gridMap.delete(key);
+  occupied.delete(key);
+
+  // 👇 Do this AFTER we access current values
   returnIndex--;
 
+  // If we’re not done yet, make the next tile grey
   if (returnIndex >= 0) {
     const next = path[returnIndex];
     const nextTile = gridMap.get(`${next.x},${next.y}`);
     if (nextTile) {
-      nextTile.setState('grey'); // ✅ Turn the next tile grey
-      nextTile.el.addEventListener('click', () => handleReturnClick(), { once: true });
-      scrollToTile(nextTile.el);
+      let label;
+      if (returnIndex === 0) {
+        // This was the last tile before the center — label it as 'end'
+        label = 'end';     
+      } else {
+        label = next.word || '';
+      }
+
+      // Replace element to reset click listener
+      const newTileEl = nextTile.el.cloneNode(true);
+      newTileEl.classList.remove('black');
+      newTileEl.classList.add('grey');
+      newTileEl.innerHTML = `<span>${label}</span>`;
+      newTileEl.addEventListener('click', () => handleReturnClick(), { once: true });
+
+      nextTile.el.replaceWith(newTileEl);
+      nextTile.el = newTileEl;
     }
   } else {
-    revealFullPath(); // 🔥 Show full path before ending
-    showEndTile();
+    // 🎉 Finished return journey
+    revealFullPath();
+
+    const start = path[0];
+    const startKey = `${start.x},${start.y}`;
+    const oldTile = gridMap.get(startKey);
+    if (oldTile) {
+      oldTile.el.remove();
+      gridMap.delete(startKey);
+      occupied.delete(startKey);
+    }
+
+    const wrapper = document.getElementById('gridWrapper');
+    const wrapperWidth = wrapper.clientWidth;
+    const wrapperHeight = wrapper.clientHeight;
+    const fullWidth = gridContainer.scrollWidth;
+    const fullHeight = gridContainer.scrollHeight;
+    const scale = Math.min(wrapperWidth / fullWidth, wrapperHeight / fullHeight);
+
+    gridContainer.style.transition = 'transform 1.5s ease-in-out';
+    gridContainer.style.transformOrigin = 'center center';
+    gridContainer.style.transform = `scale(${scale})`;
+
+    setTimeout(() => {
+      document.getElementById('completionMessage').classList.add('visible');
+    }, 1800);
+
+    document.getElementById('restartButton').addEventListener('click', () => {
+      location.reload();
+    });
   }
 }
+
+
+
+
 
 
 function showEndTile() {
   const start = path[0];
   const key = `${start.x},${start.y}`;
 
-  // Remove existing tile at the start position if it's still in gridMap
   const oldTile = gridMap.get(key);
   if (oldTile) {
     oldTile.el.remove();
@@ -261,25 +328,38 @@ function showEndTile() {
     occupied.delete(key);
   }
 
-  // Create the new "end" tile
   const tile = createTile(start.x, start.y, 'end');
   tile.setState('black', 'end');
   gridMap.set(key, tile);
   occupied.add(key);
   gridContainer.appendChild(tile.el);
-  scrollToTile(tile.el); // Optional: ensure it's visible before zoom
+  scrollToTile(tile.el);
 
-  // Add click-to-zoom handler
   tile.el.addEventListener('click', () => {
+    const wrapper = document.getElementById('gridWrapper');
+    const gridContainer = document.getElementById('gridContainer');
+
+    const wrapperWidth = wrapper.clientWidth;
+    const wrapperHeight = wrapper.clientHeight;
+    const tileSize = 60;
+
+    const spanX = maxX - minX + 1;
+    const spanY = maxY - minY + 1;
+    const requiredWidth = spanX * tileSize;
+    const requiredHeight = spanY * tileSize;
+
+    const scale = Math.min(wrapperWidth / requiredWidth, wrapperHeight / requiredHeight);
+
     gridContainer.style.transition = 'transform 1s ease';
-    gridContainer.style.transformOrigin = 'center center';
-    gridContainer.style.transform = 'scale(0.5) translate(-50%, -50%)';
+    gridContainer.style.transformOrigin = 'top left';
+    gridContainer.style.transform = `scale(${scale}) translate(${-minX * tileSize}px, ${-minY * tileSize}px)`;
 
     setTimeout(() => {
       alert('You have returned.');
     }, 1000);
   }, { once: true });
 }
+
 
 
 

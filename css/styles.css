@@ -1,5 +1,4 @@
-/* styles.css */
-
+/* General page layout */
 body {
   margin: 0;
   font-family: sans-serif;
@@ -21,13 +20,24 @@ body {
 #stepCounter {
   position: fixed;
   top: 10px;
-  right: 10px;
+  right: 25px;
   z-index: 10;
   background: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 6px 12px;
+  padding: 4px 12px;
   border-radius: 4px;
   font-weight: bold;
+}
+
+#controls button {
+  margin-left: 10px;
+  padding: 6px 12px;
+  font-size: 0.9em;
+  border-radius: 4px;
+  border: none;
+  background: #333;
+  color: white;
+  cursor: pointer;
 }
 
 #gridWrapper {
@@ -37,15 +47,21 @@ body {
   overflow: auto;
 }
 
-#gridContainer {
-  position: relative;
-  width: 12000px; /* set dynamically in JS */
-  height: 12000px; /* set dynamically in JS */
+#gridScaler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: center center;
+  transition: transform 1s ease;
 }
 
+#gridContainer {
+  position: relative;
+  width: 12000px;
+  height: 12000px;
+}
 
-
-
+/* Tile styles */
 .tile {
   position: absolute;
   width: 50px;
@@ -61,20 +77,12 @@ body {
   transition: background 0.3s;
 }
 
-.tile.grey {
-  background: #ccc;
-}
+.tile.grey { background: #ccc; }
+.tile.black { background: #111; color: white; }
 
-.tile.black {
-  background: #111;
-  color: white;
-}
+.tile span { pointer-events: none; }
 
-.tile span {
-  pointer-events: none;
-}
-
-/* Note Modal */
+/* Modal: Note */
 #noteModal {
   position: fixed;
   top: 0;
@@ -118,65 +126,174 @@ body {
   cursor: pointer;
 }
 
-.hidden {
-  display: none !important;
-}
-
-#noteModal.hidden {
-  display: none !important;
-}
-
-#centerModal.hidden {
-  display: none !important;
-}
-
-
+/* Center Modal (redesigned smaller box) */
 #centerModal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: black;
-  color: white;
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 200;
 }
 
 #centerContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
+  background: white;
+  color: black;
+  padding: 2em 3em;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 #centerLabel {
-  font-size: 3em;
+  font-size: 2em;
   font-weight: bold;
+  margin-bottom: 1em;
 }
 
 #returnBtn {
   padding: 10px 20px;
   font-size: 1em;
+  background: rgba(0, 0, 0, 0);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Completion Message (same box style) */
+#completionMessage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+
+#completionMessage.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modalBox,
+.messageBox {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 2em 3em;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.6em;
+  animation: fadeInUp 1s ease-out;
+  box-shadow: 0 4px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#restartButton {
+  margin-top: 1em;
+  padding: 0.5em 1.2em;
+  font-size: 1em;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Zoom fallback */
+#zoomOutView {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: white;
   color: black;
-  border: none;
-  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+#zoomContent {
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+input[type="range"] {
+  -webkit-appearance: none; /* remove default styling */
+  width: 100px;
+  height: 4px;
+  background: #ccc;
+  border-radius: 2px;
+  outline: none;
+}
+
+/* WebKit (Chrome, Safari) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 20px;
+  width: 20px;
+  background: black;
+  border-radius: 50%;
   cursor: pointer;
+  border: none;
+  margin-top: -8px; /* aligns thumb vertically on the track */
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Edge/IE (legacy) */
+input[type="range"]::-ms-thumb {
+  height: 20px;
+  width: 20px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
 }
 
 
-#controls button {
-  margin-left: 10px;
-  padding: 6px 12px;
-  font-size: 0.9em;
-  border-radius: 4px;
-  border: none;
-  background: #333;
-  color: white;
-  cursor: pointer;
+input[type="checkbox"] {
+  accent-color: black;
 }
 
+.tile-label {
+  transition: opacity 0.3s ease;
+}
