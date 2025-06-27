@@ -19,8 +19,8 @@ body {
 
 #stepCounter {
   position: fixed;
-  top: 10px;
-  right: 25px;
+  bottom: 10px;
+  left: 10px;
   z-index: 10;
   background: rgba(0, 0, 0, 0.7);
   color: white;
