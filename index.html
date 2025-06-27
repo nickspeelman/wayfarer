@@ -8,13 +8,15 @@
 </head>
 <body>
     <a href="#" id="aboutLink" class="button-link floating-about">about</a>
-  <div id="controls">
-    <label for="stepSlider">steps:</label>
-    <input type="range" id="stepSlider" min="15" max="100" value="15" />
-    <span id="stepValue">15</span>
-    <button id="startButton">start</button>
+    <a href="#" id="pastListsLink" class="button-link floating-past">past paths</a>
     
 
+  <div id="controls">
+    <label for="stepSlider">steps:</label>
+    <input type="range" id="stepSlider" min="15" max="100" value="30" />
+    <span id="stepValue">30</span>
+    <button id="startButton">start</button>
+    
 
 
 
@@ -43,16 +45,13 @@
     </div>
   </div>
 
-  <div id="centerModal" class="modalOverlay hidden">
-    <div class="modalBox">
-      <h1>center</h1>
-      <a href="#" id="returnBtn" class="modal-link">return</a>
- 
+<div id="centerModal" class="modalOverlay hidden">
+  <div class="modalBox">
+    <h1>center</h1>
+    <a href="#" id="returnBtn" class="modal-link">return</a>
+  </div>
 </div>
 
-
-    </div>
-  </div>
 
 
 <div id="completionMessage">
@@ -75,7 +74,7 @@
 
 
 
-</div>
+
 
  <div id="welcomeModal" class="hidden">
   <div class="modal-content">
@@ -103,17 +102,32 @@
 <p style="margin-top: 1.5em;">There’s no right way to use this. Just notice what comes up as you go.</p>
 
 
-       <a href="#" id="closeWelcome" class="modal-link">begin</a>
+       <a href="#" id="closeWelcome" class="modal-link">close</a>
 
 <label style="margin-top: 1em; font-size: 0.85em; display: flex; align-items: center; gap: 0.4em; opacity: 0.8;">
   <input type="checkbox" id="hideWelcomeCheckbox" style="transform: scale(0.85);" />
   Don't show this message again
-</label>
 
 </label>
 
 
   </div>
+  </div>
+
+
+
+
+<div id="pastListsModal" class="modalOverlay hidden">
+  <div class="modalBox">
+    <button id="closePastListsX" class="close-button" aria-label="Close">&times;</button>
+    <h2>past lists</h2>
+    <div id="pastListsContent"></div>
+    <a href="#" id="closePastLists" class="modal-link">close</a>
+  </div>
+</div>
+
+
+
 
 
 

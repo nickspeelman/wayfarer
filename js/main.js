@@ -187,20 +187,24 @@ stepToggle.addEventListener('change', () => {
   updateStepDisplay();
 });
 
-function showCenter() {
+function showCenter(x, y) {
   const centerModal = document.getElementById('centerModal');
   const returnBtn = document.getElementById('returnBtn');
 
+  // Remove all current grey tiles before opening the modal
+  removeOldGreyTiles([{ x, y }]);
+
   centerModal.classList.remove('hidden');
+
   returnBtn.onclick = () => {
     centerModal.classList.add('hidden');
     const lastStep = path[path.length - 1];
     const tile = gridMap.get(`${lastStep.x},${lastStep.y}`);
     if (tile) tile.setState('grey');
-    removeOldGreyTiles([{ x: lastStep.x, y: lastStep.y }]);
     initiateReturnPhase();
   };
 }
+
 
 function initiateReturnPhase() {
   isReturning = true;
@@ -269,6 +273,21 @@ function handleReturnClick() {
       scrollToTile(nextTile.el);
     }
   } else {
+    // Save the path to localStorage
+    const timestamp = new Date().toISOString();
+    const pastPaths = JSON.parse(localStorage.getItem('pastPaths') || '[]');
+
+    pastPaths.push({
+      timestamp,
+      words: path.map(({ word }) => word || '(no word)')
+    });
+
+    if (pastPaths.length > 100) {
+      pastPaths.shift(); // Optional: trim to max 100
+    }
+
+    localStorage.setItem('pastPaths', JSON.stringify(pastPaths));
+
     revealFullPath();
     const wrapper = document.getElementById('gridWrapper');
     const scale = Math.min(
@@ -336,16 +355,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const welcomeModal = document.getElementById('welcomeModal');
   const hideCheckbox = document.getElementById('hideWelcomeCheckbox');
+  const pastListsLink = document.getElementById('pastListsLink');
+  const pastListsModal = document.getElementById('pastListsModal');
+  const pastListsContent = document.getElementById('pastListsContent');
+  const closePastLists = document.getElementById('closePastLists');
 
-  // Load suppress setting and show modal if not suppressed
+  // Show welcome modal if not suppressed
   const suppressed = localStorage.getItem('suppressWelcome') === 'true';
   hideCheckbox.checked = suppressed;
-
   if (!suppressed) {
     welcomeModal?.classList.remove('hidden');
   }
 
-  // Listen for checkbox changes (live)
   hideCheckbox.addEventListener('change', () => {
     if (hideCheckbox.checked) {
       localStorage.setItem('suppressWelcome', 'true');
@@ -355,50 +376,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Close the modal when "begin" is clicked
   document.getElementById('closeWelcome')?.addEventListener('click', () => {
     welcomeModal.classList.add('hidden');
   });
 
-  // Reflect button logic
-  const reviewButton = document.getElementById('reviewButton');
-  const reviewModal = document.getElementById('reviewModal');
-  const reviewList = document.getElementById('reviewList');
-  const closeReview = document.getElementById('closeReview');
-
-  reviewButton?.addEventListener('click', (e) => {
-    e.preventDefault();
-    reviewList.innerHTML = '';
-
-    path.forEach(({ word }) => {
-      const li = document.createElement('li');
-      li.textContent = word || '(no word)';
-      reviewList.appendChild(li);
-    });
-
-    reviewModal?.classList.remove('hidden');
-  });
-
-  closeReview?.addEventListener('click', () => {
-    reviewModal?.classList.add('hidden');
-  });
-
-  // Restart
-  document.getElementById('restartButton')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    sessionStorage.setItem('suppressWelcome', 'true'); // Optional: session-based override
-    location.reload();
-  });
-
-  // Start button
-  document.getElementById('startButton')?.addEventListener('click', () => {
-    initializeGrid();
-  });
-
-  // About link opens welcome modal
   document.getElementById('aboutLink')?.addEventListener('click', (e) => {
     e.preventDefault();
     welcomeModal?.classList.remove('hidden');
   });
+
+  const closePastListsX = document.getElementById('closePastListsX');
+
+  closePastListsX?.addEventListener('click', () => {
+    pastListsModal?.classList.add('hidden');
+  });
+
+
+  // ✅ WORKING pastListsLink handler
+  pastListsLink?.addEventListener('click', (e) => {
+    console.log('Modal shown:', pastListsModal);
+
+    e.preventDefault();
+    pastListsContent.innerHTML = '';
+
+    const pastPaths = JSON.parse(localStorage.getItem('pastPaths') || '[]');
+    if (pastPaths.length === 0) {
+      pastListsContent.textContent = 'no past lists found';
+    } else {
+      pastPaths.forEach(({ timestamp, words }, index) => {
+        const container = document.createElement('div');
+        container.style.marginBottom = '1em';
+
+        const title = document.createElement('strong');
+        title.textContent = `${new Date(timestamp).toLocaleString()}`.toLowerCase();
+        container.appendChild(title);
+
+        const ul = document.createElement('ul');
+        words.forEach(word => {
+          const li = document.createElement('li');
+          li.textContent = word;
+          ul.appendChild(li);
+        });
+
+        container.appendChild(ul);
+        pastListsContent.appendChild(container);
+      });
+    }
+
+    pastListsModal?.classList.remove('hidden');
+  });
+
+  closePastLists?.addEventListener('click', () => {
+    pastListsModal?.classList.add('hidden');
+  });
+
+  // ✅ Restore missing start over button listener
+  document.getElementById('restartButton')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    sessionStorage.setItem('suppressWelcome', 'true');
+    location.reload();
+  });
 });
+
+
+
 
