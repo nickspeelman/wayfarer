@@ -298,6 +298,8 @@ input[type="checkbox"] {
   padding: 2em 3em;
   border-radius: 8px;
   max-width: 600px;
+  max-height: 80vh;           /* ✅ Set maximum height */
+  overflow-y: auto;           /* ✅ Enable scroll if needed */
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   animation: fadeInUp 1s ease-out;
