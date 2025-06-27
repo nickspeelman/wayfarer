@@ -23,6 +23,8 @@ const occupied = new Set(); // Tracks all placed tiles
 let returnIndex = null;
 let isReturning = false;
 let minX = 0, maxX = 0, minY = 0, maxY = 0;
+let suppressWelcome = false;
+
 
 
 
@@ -308,11 +310,17 @@ function handleReturnClick() {
       document.getElementById('completionMessage').classList.add('visible');
     }, 1800);
 
-    document.getElementById('restartButton').addEventListener('click', () => {
+    document.getElementById('restartButton').addEventListener('click', (e) => {
+      e.preventDefault();
+      sessionStorage.setItem('suppressWelcome', 'true');
       location.reload();
     });
+
+
   }
 }
+
+
 
 
 
@@ -357,7 +365,7 @@ function showEndTile() {
     gridContainer.style.transform = `scale(${scale}) translate(${-minX * tileSize}px, ${-minY * tileSize}px)`;
 
     setTimeout(() => {
-      alert('You have returned.');
+      alert('you have returned.');
     }, 1000);
   }, { once: true });
 }
@@ -380,4 +388,19 @@ function openNoteModal(x, y, note = '') {
 
 document.getElementById('startButton').addEventListener('click', () => {
   initializeGrid();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const suppress = sessionStorage.getItem('suppressWelcome');
+  if (suppress !== 'true') {
+    document.getElementById('welcomeModal').classList.remove('hidden');
+  }
+
+  // Always clear it on first load, so it doesn't persist between restarts
+  sessionStorage.removeItem('suppressWelcome');
+});
+
+
+document.getElementById('closeWelcome').addEventListener('click', () => {
+  document.getElementById('welcomeModal').classList.add('hidden');
 });
