@@ -413,7 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
         container.style.marginBottom = '1em';
 
         const title = document.createElement('strong');
-        title.textContent = `${new Date(timestamp).toLocaleString()}`.toLowerCase();
+        const date = new Date(timestamp);
+          title.textContent = date.toLocaleString([], {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          }).toLowerCase();
+
         container.appendChild(title);
 
         const ul = document.createElement('ul');
