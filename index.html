@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wayfarer</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+
+  <div id="controls">
+    <label for="stepSlider">steps:</label>
+    <input type="range" id="stepSlider" min="15" max="100" value="30" />
+    <span id="stepValue">30</span>
+    <button id="startButton">start</button>
+    
+
+<div class="floating-button-container">
+  <a href="#" id="aboutLink" class="button-link floating-about">about</a>
+  <a href="#" id="pastListsLink" class="button-link floating-past">past paths</a>
+</div>
+
+
+
+    <label>
+      <input type="checkbox" id="stepToggle"/> show step counter
+    </label>
+  </div>
+
+
+  <div id="stepCounter">step 0</div>
+
+<div id="gridWrapper">
+  <div id="gridScaler"> <!-- ⬅️ Add this -->
+    <div id="gridContainer"></div>
+  </div>
+</div>
+
+
+
+  <div id="noteModal" class="hidden">
+    <div id="noteContent">
+      <textarea id="noteText" placeholder="Type your reflection..."></textarea>
+      <a href="#" id="closeNote" class="modal-link">close</a>
+
+    </div>
+  </div>
+
+<div id="centerModal" class="modalOverlay hidden">
+  <div class="modalBox">
+    <h1>center</h1>
+    <a href="#" id="returnBtn" class="modal-link">return</a>
+  </div>
+</div>
+
+
+
+<div id="completionMessage">
+  <div class="modalBox">
+    <h1>You have returned.</h1>
+    <a href="#" id="reviewButton" class="modal-link">reflect</a>
+    <a href="#" id="restartButton" class="modal-link">start over</a>
+  </div>
+</div>
+
+<!-- Review Path Modal (moved outside) -->
+<div id="reviewModal" class="hidden">
+  <div id="reviewContent">
+    <h2>Your Path</h2>
+    <ul id="reviewList"></ul>
+    <a href="#" id="closeReview" class="modal-link">close</a>
+  </div>
+</div>
+
+
+
+
+
+
+ <div id="welcomeModal" class="hidden">
+  <div class="modal-content">
+        <blockquote style="font-style: italic; margin-bottom: 1.5em;">
+      “You are a wayfarer — the road is within you.”  
+      <div style="font-size: 0.9em; opacity: 0.7;">– <i>Attar, The Conference of the Birds</i></div>
+    </blockquote>
+    <h2>Welcome to Wayfarer</h2>
+    <p>This is a kind of digital labyrinth — something like a walking meditation, but for a screen. It’s not meant to replace the real thing, just to offer an alternative for the times when you can’t get outside or up and moving.</p>
+
+    <p>The idea is to give you just enough to focus on that your mind can wander a little. Not in a distracted way — more like the way walking can open up space to think.</p>
+
+  <h3>How it works</h3>
+<ul style="text-align: left; max-width: 30em; margin: 0 auto; padding-left: 1.2em;">
+  <li>Set your step count at the top left — this determines how far you’ll walk before reaching the center.</li>
+  <li>Click the start button to generate the first tile on your path.</li>
+  <li>You can turn the step counter display on or off using the checkbox.</li>
+  <li>Click the grey "begin" tile to start.</li>
+  <li>Three new grey tiles will appear, each labeled with a short word — a prompt, a tone, a seed. Pick one.</li>
+  <li>With each step, you’ll see new words.</li>
+  <li>When you reach the center, pause.</li>
+  <li>Then follow the path back to where you started.</li>
+</ul>
+
+<p style="margin-top: 1.5em;">There’s no right way to use this. Just notice what comes up as you go.</p>
+
+
+       <a href="#" id="closeWelcome" class="modal-link">close</a>
+
+<label style="margin-top: 1em; font-size: 0.85em; display: flex; align-items: center; gap: 0.4em; opacity: 0.8;">
+  <input type="checkbox" id="hideWelcomeCheckbox" style="transform: scale(0.85);" />
+  Don't show this message again
+
+</label>
+
+
+  </div>
+  </div>
+
+
+
+
+<div id="pastListsModal" class="modalOverlay hidden">
+  <div class="modalBox">
+    <button id="closePastListsX" class="close-button" aria-label="Close">&times;</button>
+    <h2>past lists</h2>
+    <div id="pastListsContent"></div>
+    <a href="#" id="closePastLists" class="modal-link">close</a>
+  </div>
+</div>
+
+
+
+
+
+
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

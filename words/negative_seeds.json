@@ -1,0 +1,122 @@
+{
+  "violence": [
+    "kill",
+    "war",
+    "fight",
+    "stab",
+    "hurt",
+    "rage",
+    "gun",
+    "shoot",
+    "blood",
+    "attack"
+  ],
+  "horror": [
+    "ghost",
+    "haunt",
+    "curse",
+    "terror",
+    "monster",
+    "scream",
+    "dark",
+    "nightmare",
+    "ghoul",
+    "panic"
+  ],
+  "sexuality": [
+    "sex",
+    "lust",
+    "nude",
+    "erotic",
+    "fetish",
+    "porn",
+    "strip",
+    "orgy",
+    "molest",
+    "explicit"
+  ],
+  "cruelty": [
+    "abuse",
+    "mock",
+    "cruel",
+    "spite",
+    "bully",
+    "scorn",
+    "torment",
+    "meanness",
+    "hate",
+    "shame"
+  ],
+  "addiction": [
+    "drunk",
+    "high",
+    "wasted",
+    "meth",
+    "coke",
+    "opioid",
+    "booze",
+    "stoned",
+    "junkie",
+    "overdose"
+  ],
+  "corruption": [
+    "lie",
+    "cheat",
+    "bribe",
+    "scam",
+    "fraud",
+    "greed",
+    "traitor",
+    "corrupt",
+    "deceit",
+    "steal"
+  ],
+  "despair": [
+    "grief",
+    "lost",
+    "fail",
+    "collapse",
+    "misery",
+    "hopeless",
+    "worthless",
+    "alone",
+    "cry",
+    "void"
+  ],
+  "noise": [
+    "buzz",
+    "clang",
+    "blast",
+    "scream",
+    "blare",
+    "alarm",
+    "shriek",
+    "roar",
+    "howl",
+    "crash"
+  ],
+  "filth": [
+    "filth",
+    "slime",
+    "rot",
+    "gross",
+    "mold",
+    "maggot",
+    "vomit",
+    "scum",
+    "stench",
+    "waste"
+  ],
+  "dehumanization": [
+    "slave",
+    "tool",
+    "object",
+    "thing",
+    "puppet",
+    "cog",
+    "meat",
+    "pawn",
+    "robot",
+    "subhuman"
+  ]
+}
